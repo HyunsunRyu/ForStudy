@@ -7,6 +7,7 @@ namespace Study
     [CreateAssetMenu(menuName = "Create Data/Custom Data")]
     public class Data : ScriptableObject
     {
-        public List<int> values;
+        public List<Object> resourceList;
+        public List<bool> checkList;
     }
 }

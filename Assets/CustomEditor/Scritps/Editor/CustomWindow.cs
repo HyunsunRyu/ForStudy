@@ -7,10 +7,9 @@ namespace Study
 {
     public class CustomWindow : EditorWindow
     {
-        private Vector2 scrollPos;
+        private ScrollViewEditor scrollView;
 
-        private List<Data> dataList;
-        private List<DisplayData> displayDataList;
+        private List<DataBoxEditor> dataBoxList;
 
         [MenuItem("Study/Custom Editor Window")]
         private static void Init()
@@ -20,6 +19,14 @@ namespace Study
             window.Show();
         }
 
+        private void Awake()
+        {
+            scrollView = new ScrollViewEditor();
+            scrollView.Init(GUILayout.Height(300f));
+
+            dataBoxList = new List<DataBoxEditor>();
+        }
+
         private void OnEnable()
         {
             InitData();
@@ -27,36 +34,26 @@ namespace Study
 
         private void InitData()
         {
-            if (dataList == null || displayDataList == null)
-            {
-                dataList = new List<Data>();
-                displayDataList = new List<DisplayData>();
-            }
-            dataList.Clear();
-            displayDataList.Clear();
+            dataBoxList.Clear();
 
-            string[] guides = AssetDatabase.FindAssets("t:CustomWindow", new string[] { "Assets/CustomEditor/Data" });
+
+            string[] guides = AssetDatabase.FindAssets("t:Data", new string[] { "Assets/CustomEditor/Data" });
             foreach (string guid in guides)
             {
-                Data data = AssetDatabase.LoadAssetAtPath<Data>(guid);
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                Data data = AssetDatabase.LoadAssetAtPath<Data>(path);
                 if (data != null)
                 {
-                    dataList.Add(data);
-                    displayDataList.Add(new DisplayData());
+                    CustomDataBoxEditor dataBox = new CustomDataBoxEditor();
+                    dataBox.Init(data);
+                    dataBoxList.Add(dataBox);
                 }
             }
         }
 
         private void OnGUI()
         {
-            scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Height(300f));
-
-            foreach (Data data in dataList)
-            {
-                
-            }
-
-            EditorGUILayout.EndScrollView();
+            scrollView.ShowScrollView(dataBoxList);
         }
     }
 }
